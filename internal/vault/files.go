@@ -159,3 +159,30 @@ func (v *Vault) DeleteFile(index int) error {
 
 	return v.saveMetadata()
 }
+
+// CreateFile creates a new file in the vault with the provided data.
+func (v *Vault) CreateFile(name string, data []byte) error {
+	name = sanitize(name)
+	if name == "" {
+		return fmt.Errorf("invalid name")
+	}
+
+	enc, err := crypto.EncryptBytes(data, v.masterKey)
+	if err != nil {
+		return err
+	}
+
+	filesDir := filepath.Join(v.path, "files")
+	if err := os.MkdirAll(filesDir, 0700); err != nil {
+		return err
+	}
+
+	dst := resolveCollision(v.filePath(name))
+	if err := os.WriteFile(dst, enc, 0600); err != nil {
+		return err
+	}
+
+	v.entries = append(v.entries, FileEntry{Name: filepath.Base(dst)})
+
+	return v.saveMetadata()
+}

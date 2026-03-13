@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
 
 	"GoLockbox/internal/tui"
 
@@ -9,7 +10,8 @@ import (
 )
 
 func main() {
-	if _, err := tea.NewProgram(tui.InitialModel()).Run(); err != nil {
-		log.Fatal(err)
+	if _, err := tea.NewProgram(tui.NewRootModel()).Run(); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
 	}
 }

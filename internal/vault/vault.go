@@ -208,3 +208,29 @@ func zeroBytes(b []byte) {
 		b[i] = 0
 	}
 }
+
+// Close saves metadata and zeros the master key from memory.
+func (v *Vault) Close() error {
+	if v == nil {
+		return nil
+	}
+
+	if err := v.SaveVault(); err != nil {
+		return err
+	}
+
+	if v.masterKey != nil {
+		zeroBytes(v.masterKey)
+		v.masterKey = nil
+	}
+
+	return nil
+}
+
+// Path returns the vault filesystem path.
+func (v *Vault) Path() string {
+	if v == nil {
+		return ""
+	}
+	return v.path
+}
